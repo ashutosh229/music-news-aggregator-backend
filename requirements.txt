@@ -4,3 +4,5 @@ requests
 beautifulsoup4 
 firebase-admin 
 websockets
+python-dotenv  
+  
