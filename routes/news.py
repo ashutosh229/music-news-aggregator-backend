@@ -23,7 +23,7 @@ def get_all_news():
         news = [{**doc.to_dict(), "id": doc.id} for doc in docs]
         return {"success": True, "data": news}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"success": False, "error": str(e)}
 
 
 ## http://127.0.0.1:8080/news/latest
@@ -39,7 +39,7 @@ def get_latest_news():
         news = [{**doc.to_dict(), "id": doc.id} for doc in docs]
         return {"success": True, "data": news}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"success": False, "error": str(e)}
 
 
 ## http://127.0.0.1:8080/news/search
@@ -60,4 +60,4 @@ def search_news(
 
         return {"success": True, "data": results}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"success": False, "error": str(e)}

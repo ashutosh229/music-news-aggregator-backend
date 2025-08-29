@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .hidden { display: none; }
+    input, button { margin: 5px; padding: 5px; }
+    .news-item { border: 1px solid #ccc; padding: 10px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Music News Admin Panel</h1>
+
+  <!-- Login -->
+  <div id="login-section">
+    <h3>Login</h3>
+    <input type="password" id="token" placeholder="Enter Admin Token">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- Admin Section -->
+  <div id="admin-section" class="hidden">
+    <h3>Welcome, Admin</h3>
+    <button onclick="fetchNews()">Refresh News</button>
+    <button onclick="showAddForm()">Add News</button>
+    <div id="add-form" class="hidden">
+      <h4>Add News</h4>
+      <input id="title" placeholder="Title"><br>
+      <input id="url" placeholder="URL"><br>
+      <input id="summary" placeholder="Summary"><br>
+      <input id="image" placeholder="Image URL"><br>
+      <input id="source" placeholder="Source Name"><br>
+      <button onclick="addNews()">Submit</button>
+    </div>
+    <h3>News List</h3>
+    <div id="news-list"></div>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8080";
+    let authToken = localStorage.getItem("authToken");
+
+    function login() {
+      const token = document.getElementById("token").value;
+      if (token === "SECRET123") {
+        localStorage.setItem("authToken", token);
+        authToken = token;
+        document.getElementById("login-section").classList.add("hidden");
+        document.getElementById("admin-section").classList.remove("hidden");
+        fetchNews();
+      } else {
+        alert("Invalid token");
+      }
+    }
+
+    async function fetchNews() {
+      const res = await fetch(`${API_BASE}/admin/news`, {
+        headers: { Authorization: "Bearer " + authToken }
+      });
+      if (!res.ok) { alert("Unauthorized"); return; }
+      const data = await res.json();
+      const list = document.getElementById("news-list");
+      list.innerHTML = "";
+      data.data.forEach(news => {
+        const div = document.createElement("div");
+        div.className = "news-item";
+        div.innerHTML = `
+          <b>${news.title}</b><br>
+          ${news.summary}<br>
+          <a href="${news.url}" target="_blank">Read more</a><br>
+          <button onclick="deleteNews('${news.id}')">Delete</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function showAddForm() {
+      document.getElementById("add-form").classList.toggle("hidden");
+    }
+
+    async function addNews() {
+      const news = {
+        title: document.getElementById("title").value,
+        url: document.getElementById("url").value,
+        summary: document.getElementById("summary").value,
+        image: document.getElementById("image").value,
+        sourceName: document.getElementById("source").value,
+        timestamp: new Date().toISOString()
+      };
+      const res = await fetch(`${API_BASE}/admin/news`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + authToken
+        },
+        body: JSON.stringify(news)
+      });
+      if (res.ok) {
+        alert("News added!");
+        fetchNews();
+      } else {
+        alert("Failed to add news");
+      }
+    }
+
+    async function deleteNews(id) {
+      const res = await fetch(`${API_BASE}/admin/news/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + authToken }
+      });
+      if (res.ok) {
+        alert("News deleted!");
+        fetchNews();
+      } else {
+        alert("Failed to delete news");
+      }
+    }
+
+    // Auto-login if token is stored
+    if (authToken === "SECRET123") {
+      document.getElementById("login-section").classList.add("hidden");
+      document.getElementById("admin-section").classList.remove("hidden");
+      fetchNews();
+    }
+  </script>
+</body>
+</html>
