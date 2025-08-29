@@ -31,16 +31,28 @@ def scrape_source1():
             )
     return articles
 
+
 ## TODO: other scrapers to be built
 def scrape_source2():
-    pass 
+    pass
+
 
 def scrape_source3():
     pass
 
+
 def scrapers_runner():
     sources = [scrape_source1, scrape_source2, scrape_source3]
     for scraper in sources:
-        articles = scraper() 
+        articles = scraper()
         for article in articles:
-             db.collection()
+            query = (
+                db.collection(NEWS_COLLECTION)
+                .where("title", "==", article["title"])
+                .where("url", "==", article["url"])
+                .stream()
+            )
+            exists = any(query)
+            if not exists:
+                doc_ref = db.collection(NEWS_COLLECTION).add(article)
+                ## TODO: add the broadcasting mechanism
