@@ -3,12 +3,11 @@ from typing import List
 from utils.scraper import scrapers_runner
 from routes.websocket import broadcast_new_article
 
-clients: List[WebSocket] = []
-
-router = APIRouter()
+router = APIRouter(prefix="/scrape")
 
 
-@router.post("/scrape-now")
+## http://127.0.0.1:8080/scrape
+@router.post("")
 async def scrape_now():
     new_articles = scrapers_runner()
     for article in new_articles:

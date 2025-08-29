@@ -3,7 +3,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from database.database import db
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 SOURCE_1 = os.getenv("SOURCE_1")
 NEWS_COLLECTION = os.getenv("NEWS_COLLECTION")

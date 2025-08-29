@@ -3,10 +3,11 @@ from typing import List
 
 clients: List[WebSocket] = []
 
-router = APIRouter()
+router = APIRouter(prefix="/websocket")
 
 
-@router.websocket("/ws")
+## http://127.0.0.1:8080/websocket
+@router.websocket("")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     clients.append(websocket)
