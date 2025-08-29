@@ -1,28 +1,20 @@
 from fastapi import APIRouter, WebSocket
 from typing import List
+from utils.scraper import scrapers_runner
+from routes.websocket import broadcast_new_article
 
 clients: List[WebSocket] = []
 
 router = APIRouter()
 
 
-@router.websocket("/ws")
-async def websocket_entrypoint(websocket: WebSocket):
-    await websocket.accept()
-    clients.append(websocket)
-    try:
-        while True:
-            await websocket.receive_text()
-    except:
-        clients.remove(websocket)
-
-
-async def broadcast_new_article(article: dict):
-    to_remove = []
-    for client in clients:
-        try:
-            await client.send_json(article)
-        except:
-            to_remove.append(client)
-    for client in to_remove:
-        clients.remove(client)
+@router.post("/scrape-now")
+async def scrape_now():
+    new_articles = scrapers_runner()
+    for article in new_articles:
+        await broadcast_new_article(article)
+    return {
+        "success": True,
+        "new_articles_count": len(new_articles),
+        "new_articles": new_articles,
+    }

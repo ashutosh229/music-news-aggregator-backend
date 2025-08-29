@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from database.database import db
 import os
-from routes.scraping import broadcast_new_article
+
 
 SOURCE_1 = os.getenv("SOURCE_1")
 NEWS_COLLECTION = os.getenv("NEWS_COLLECTION")
@@ -44,6 +44,7 @@ def scrape_source3():
 
 def scrapers_runner():
     sources = [scrape_source1]  ## TODO: adding more scrapers
+    new_articles = []
     for scraper in sources:
         articles = scraper()
         for article in articles:
@@ -55,5 +56,6 @@ def scrapers_runner():
             )
             exists = any(query)
             if not exists:
-                doc_ref = db.collection(NEWS_COLLECTION).add(article)
-                broadcast_new_article(article)
+                db.collection(NEWS_COLLECTION).add(article)
+                new_articles.append(article)
+    return new_articles
