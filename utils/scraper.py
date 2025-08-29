@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-from database import db
+from database.database import db
 import os
 
 SOURCE_1 = os.getenv("SOURCE_1")
