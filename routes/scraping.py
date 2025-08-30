@@ -6,6 +6,7 @@ from routes.websocket import broadcast_new_article
 router = APIRouter(prefix="/scrape", tags=["Scraping"])
 
 
+## http://localhost:8080/scrape?limit=10
 @router.post("")
 async def scrape_now(
     limit: Optional[int] = Query(
