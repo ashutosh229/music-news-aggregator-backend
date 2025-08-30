@@ -75,7 +75,7 @@ def scrapers_runner(limit: int = 50):
             if len(new_articles) >= limit:
                 return new_articles
             query = (
-                db.collection(NEWS_COLLECTION)
+                db.collection("news")
                 .where("title", "==", article["title"])
                 .where("url", "==", article["url"])
                 .stream()

@@ -3,3 +3,5 @@ gitpush.sh
 .env
 music-news-aggregator-backend-firebase-adminsdk-fbsvc-b947f8d34b.json
 __pycache__
+music-news-aggregator-backend-ae23ec38d25f.json
+database/test.py
