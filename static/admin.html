@@ -39,7 +39,7 @@
   </div>
 
   <script>
-    const API_BASE = "http://127.0.0.1:8080";
+    const API_BASE = "http://localhost:8080";
     let authToken = localStorage.getItem("authToken");
 
     function login() {
@@ -69,12 +69,13 @@
         div.innerHTML = `
           <b>${news.title}</b><br>
           ${news.summary}<br>
-          <a href="${news.url}" target="_blank">Read more</a><br>
+          <a href="${news.url}" target="_blank">Read more</a><bār>
+          <button onclick="editNews('${news.id}', '${news.title}', '${news.url}', '${news.summary}', '${news.image}', '${news.sourceName}')">Edit</button>
           <button onclick="deleteNews('${news.id}')">Delete</button>
         `;
         list.appendChild(div);
       });
-    }
+    } 
 
     function showAddForm() {
       document.getElementById("add-form").classList.toggle("hidden");
