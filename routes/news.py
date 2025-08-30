@@ -17,9 +17,9 @@ def get_all_news():
     try:
         docs = db.collection(NEWS_COLLECTION).order_by("timestamp").stream()
         news = [{**doc.to_dict(), "id": doc.id} for doc in docs]
-        return {"success": True, "data": news}
+        return {"success": True, "message": "News fetched successfully", "data": news}
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 ## http://127.0.0.1:8080/news/latest
@@ -33,9 +33,13 @@ def get_latest_news():
             .stream()
         )
         news = [{**doc.to_dict(), "id": doc.id} for doc in docs]
-        return {"success": True, "data": news}
+        return {
+            "success": True,
+            "message": "Latest news fetched successfully",
+            "data": news,
+        }
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 ## http://127.0.0.1:8080/news/search?query=Tyler
@@ -45,7 +49,7 @@ def search_news(
 ):
     try:
         if not query:
-            return {"message": "No query provided"}
+            return {"success": True, "message": "No query provided"}
         docs = db.collection("news").stream()
         results = []
         for doc in docs:
@@ -56,6 +60,10 @@ def search_news(
             ):
                 results.append({**item, "id": doc.id})
 
-        return {"success": True, "data": results}
+        return {
+            "success": True,
+            "message": "News fetched successfully",
+            "data": results,
+        }
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
