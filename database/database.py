@@ -10,4 +10,4 @@ print(CERTIFICATE_PATH)
 
 cred = credentials.Certificate(CERTIFICATE_PATH)
 firebase_admin.initialize_app(cred)
-db = firestore.client()
+db = firestore.client(database_id="music-db")

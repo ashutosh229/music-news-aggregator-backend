@@ -13,12 +13,11 @@ async def scrape_now(
     )
 ):
     new_articles = scrapers_runner(limit)
-    limited_articles = new_articles[:limit]
-    for article in limited_articles:
+    for article in new_articles:
         await broadcast_new_article(article)
 
     return {
         "success": True,
-        "new_articles_count": len(limited_articles),
-        "new_articles": limited_articles,
+        "new_articles_count": len(new_articles),
+        "new_articles": new_articles,
     }

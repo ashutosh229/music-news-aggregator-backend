@@ -12,7 +12,7 @@ SOURCE_1_URL = os.getenv("SOURCE_1_URL")
 NEWS_COLLECTION = os.getenv("NEWS_COLLECTION")
 
 
-def scrape_source1(limit: int = 20):
+def scrape_source1():
     url = SOURCE_1_URL
     res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
     soup = BeautifulSoup(res.text, "html.parser")
@@ -20,7 +20,7 @@ def scrape_source1(limit: int = 20):
     articles = []
 
     # Each story is inside <li> with class "story"
-    for card in soup.select("li .story")[:limit]:
+    for card in soup.select("li .story"):
         try:
             # Title + link
             title_tag = card.select_one("h3.c-title a")
