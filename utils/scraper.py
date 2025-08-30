@@ -9,6 +9,8 @@ load_dotenv()
 
 SOURCE_1 = os.getenv("SOURCE_1")
 SOURCE_1_URL = os.getenv("SOURCE_1_URL")
+SOURCE_2 = os.getenv("SOURCE_2")
+SOURCE_2_URL = os.getenv("SOURCE_2_URL")
 NEWS_COLLECTION = os.getenv("NEWS_COLLECTION")
 
 
@@ -45,9 +47,44 @@ def scrape_source1():
     return articles
 
 
-## TODO: other scrapers to be built
 def scrape_source2():
-    pass
+    url = SOURCE_2_URL
+    res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+    soup = BeautifulSoup(res.text, "html.parser")
+    articles = []
+    for card in soup.select("div.tdb_module_loop"):
+        try:
+            title_tag = card.select_one("h3.entry-title a")
+            title = title_tag.get_text(strip=True) if title_tag else None
+            link = title_tag["href"] if title_tag else None
+            img_tag = card.select_one("span.entry-thumb")
+            image = (
+                img_tag["data-img-retina-url"]
+                if img_tag and img_tag.has_attr("data-img-retina-url")
+                else (
+                    img_tag["data-img-url"]
+                    if img_tag and img_tag.has_attr("data-img-url")
+                    else None
+                )
+            )
+            summary_tag = card.select_one("div.td-excerpt")
+            summary = summary_tag.get_text(strip=True) if summary_tag else ""
+            author = "NME Staff"
+            if title and link:
+                articles.append(
+                    {
+                        "title": title,
+                        "url": link,
+                        "summary": summary,
+                        "image": image,
+                        "author": author,
+                        "sourceName": SOURCE_2,
+                        "timestamp": datetime.utcnow(),
+                    }
+                )
+        except Exception as e:
+            print(f"Error parsing NME card: {e}")
+    return articles
 
 
 def scrape_source3():
@@ -55,7 +92,7 @@ def scrape_source3():
 
 
 def scrapers_runner(limit):
-    sources = [scrape_source1]  ## TODO: adding more scrapers
+    sources = [scrape_source1, scrape_source2] 
     new_articles = []
     for scraper in sources:
         articles = scraper()
