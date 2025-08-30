@@ -44,6 +44,8 @@ def search_news(
     query: str = Query(None, description="Keyword to search in news titles/summary")
 ):
     try:
+        if not query:
+            return {"message": "No query provided"}
         docs = db.collection("news").stream()
         results = []
         for doc in docs:
