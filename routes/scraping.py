@@ -6,7 +6,6 @@ from routes.websocket import broadcast_new_article
 router = APIRouter(prefix="/scrape", tags=["Scraping"])
 
 
-# ✅ POST /scrape?limit=20
 @router.post("")
 async def scrape_now(
     limit: Optional[int] = Query(
@@ -14,11 +13,7 @@ async def scrape_now(
     )
 ):
     new_articles = scrapers_runner(limit)
-
-    # ✅ restrict the output
     limited_articles = new_articles[:limit]
-
-    # still broadcast all, but return limited
     for article in limited_articles:
         await broadcast_new_article(article)
 
