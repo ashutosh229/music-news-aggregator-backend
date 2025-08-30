@@ -13,12 +13,14 @@ async def scrape_now(
         10, ge=1, le=100, description="Max number of articles to return"
     )
 ):
-    new_articles = scrapers_runner(limit)
-    for article in new_articles:
-        await broadcast_new_article(article)
-
-    return {
-        "success": True,
-        "new_articles_count": len(new_articles),
-        "new_articles": new_articles,
-    }
+    try:
+        new_articles = scrapers_runner(limit)
+        for article in new_articles:
+            await broadcast_new_article(article)
+        return {
+            "success": True,
+            "new_articles_count": len(new_articles),
+            "new_articles": new_articles,
+        }
+    except Exception as e:
+        return {"success": False, "message": str(e)}

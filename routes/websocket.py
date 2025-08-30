@@ -25,6 +25,5 @@ async def broadcast_new_article(article: dict):
             await client.send_json(article)
         except:
             to_remove.append(client)
-
     for client in to_remove:
         clients.remove(client)
