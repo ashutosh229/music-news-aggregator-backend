@@ -15,11 +15,7 @@ router = APIRouter(prefix="/news", tags=["Public News APIs"])
 @router.get("")
 def get_all_news():
     try:
-        docs = (
-            db.collection(NEWS_COLLECTION)
-            .order_by("timestamp", kwargs={"direction": "DESCENDING"})
-            .stream()
-        )
+        docs = db.collection(NEWS_COLLECTION).order_by("timestamp").stream()
         news = [{**doc.to_dict(), "id": doc.id} for doc in docs]
         return {"success": True, "data": news}
     except Exception as e:
@@ -42,10 +38,10 @@ def get_latest_news():
         return {"success": False, "error": str(e)}
 
 
-## http://127.0.0.1:8080/news/search
+## http://127.0.0.1:8080/news/search?query=Tyler
 @router.get("/search")
 def search_news(
-    query: str = Query(..., description="Keyword to search in news titles/summary")
+    query: str = Query(None, description="Keyword to search in news titles/summary")
 ):
     try:
         docs = db.collection("news").stream()
