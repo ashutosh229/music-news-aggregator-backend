@@ -11,6 +11,8 @@ SOURCE_1 = os.getenv("SOURCE_1")
 SOURCE_1_URL = os.getenv("SOURCE_1_URL")
 SOURCE_2 = os.getenv("SOURCE_2")
 SOURCE_2_URL = os.getenv("SOURCE_2_URL")
+SOURCE_3 = os.getenv("SOURCE_3")
+SOURCE_3_URL = os.getenv("SOURCE_3_URL")
 NEWS_COLLECTION = os.getenv("NEWS_COLLECTION")
 
 
@@ -88,11 +90,58 @@ def scrape_source2():
 
 
 def scrape_source3():
-    pass
+    url = SOURCE_3_URL
+    res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+    soup = BeautifulSoup(res.text, "html.parser")
+    articles = []
+    for card in soup.select("div.SummaryItemWrapper-ircKXK"):
+        try:
+            title_tag = card.select_one("h3.SummaryItemHedBase-hnYOxl")
+            link_tag = card.select_one("a.SummaryItemHedLink-cxRzVg")
+            title = title_tag.get_text(strip=True) if title_tag else None
+            link = (
+                "https://pitchfork.com" + link_tag["href"]
+                if link_tag and link_tag.has_attr("href")
+                else None
+            )
+            img_tag = card.select_one("img.responsive-image__image")
+            image = img_tag["src"] if img_tag and img_tag.has_attr("src") else None
+            author_tag = card.select_one("span.BylineName-kqTBDS")
+            author = (
+                author_tag.get_text(strip=True).replace("By ", "")
+                if author_tag
+                else "Unknown"
+            )
+            date_tag = card.select_one("time.summary-item__publish-date")
+            if date_tag:
+                try:
+                    published_date = datetime.strptime(
+                        date_tag.get_text(strip=True), "%B %d, %Y"
+                    )
+                except ValueError:
+                    published_date = datetime.utcnow()
+            else:
+                published_date = datetime.utcnow()
+            summary = ""
+            if title and link:
+                articles.append(
+                    {
+                        "title": title,
+                        "url": link,
+                        "summary": summary,
+                        "image": image,
+                        "author": author,
+                        "sourceName": SOURCE_3_URL,
+                        "timestamp": published_date,
+                    }
+                )
+        except Exception as e:
+            print(f"Error parsing Pitchfork card: {e}")
+    return articles
 
 
 def scrapers_runner(limit):
-    sources = [scrape_source1, scrape_source2] 
+    sources = [scrape_source1, scrape_source2, scrape_source3]
     new_articles = []
     for scraper in sources:
         articles = scraper()
